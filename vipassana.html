@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ヴィパサナー瞑想</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --bg2: #16162a;
+    --bg3: #1e1e35;
+    --accent: #7c6af7;
+    --accent-soft: rgba(124,106,247,0.15);
+    --gold: #c9a96e;
+    --text: #e8e6f0;
+    --text-muted: #8885a0;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .stars {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    animation: twinkle var(--d) ease-in-out infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.8; }
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .app-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .app-header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .app-header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border-hover); }
+
+  .card-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .quote-lotus {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
+
+  .quote-text {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 0.75rem;
+    white-space: pre-line;
+  }
+
+  .quote-source {
+    font-size: 12px;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  .preset-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+  }
+
+  .preset-btn {
+    flex: 1;
+    background: transparent;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    padding: 7px 0;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .preset-btn:hover, .preset-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .timer-wrap {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .timer-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .timer-bg-circle {
+    fill: none;
+    stroke: var(--bg3);
+    stroke-width: 3;
+  }
+
+  .timer-progress {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 565;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+  }
+
+  .timer-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .timer-display {
+    font-size: 42px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .timer-status {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .btn {
+    border: 0.5px solid var(--border);
+    background: transparent;
+    border-radius: var(--radius-sm);
+    padding: 10px 28px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .btn:hover { background: var(--bg3); border-color: var(--border-hover); }
+  .btn:active { transform: scale(0.98); }
+
+  .btn-primary {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .btn-primary:hover { background: rgba(124,106,247,0.25); }
+
+  .memo-textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    resize: none;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .memo-textarea:focus { border-color: var(--accent); }
+  .memo-textarea::placeholder { color: var(--text-muted); }
+
+  .btn-full { width: 100%; }
+
+  .stats-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+
+  .stat-item {
+    flex: 1;
+    background: var(--bg3);
+    border-radius: var(--radius-sm);
+    padding: 12px 8px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 11px; color: var(--text-muted); }
+
+  .record-item {
+    border-top: 0.5px solid var(--border);
+    padding: 12px 0;
+  }
+
+  .record-item:first-child { border-top: none; }
+
+  .record-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .record-date { font-size: 12px; color: var(--text-muted); }
+  .record-duration { font-size: 13px; color: var(--gold); }
+  .record-memo { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+  .empty-msg {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  .btn-danger {
+    border-color: rgba(220,80,80,0.4);
+    color: #e06060;
+    font-size: 12px;
+    padding: 7px 16px;
+  }
+
+  .btn-danger:hover { background: rgba(220,80,80,0.1); }
+
+  .records-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .dialog-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dialog-overlay.show { display: flex; }
+
+  .dialog {
+    background: var(--bg2);
+    border: 0.5px solid var(--border-hover);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    max-width: 300px;
+    width: 90%;
+    text-align: center;
+  }
+
+  .dialog h3 {
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .dialog p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .dialog-btns { display: flex; gap: 8px; }
+  .dialog-btns .btn { flex: 1; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card { animation: fadeIn 0.4s ease forwards; }
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.1s; }
+  .card:nth-child(4) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <div class="app-header">
+    <h1>ヴィパサナー</h1>
+    <p>VIPASSANĀ</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">今日の言葉</div>
+    <div class="quote-lotus">☸</div>
+    <div class="quote-text" id="quote-text"></div>
+    <div class="quote-source" id="quote-source"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">瞑想タイマー</div>
+    <div class="preset-row">
+      <button class="preset-btn" onclick="setPreset(10,this)">10分</button>
+      <button class="preset-btn active" onclick="setPreset(20,this)">20分</button>
+      <button class="preset-btn" onclick="setPreset(30,this)">30分</button>
+      <button class="preset-btn" onclick="setPreset(60,this)">1時間</button>
+    </div>
+    <div class="timer-wrap">
+      <svg class="timer-svg" viewBox="0 0 200 200">
+        <circle class="timer-bg-circle" cx="100" cy="100" r="90"/>
+        <circle class="timer-progress" id="timer-ring" cx="100" cy="100" r="90"/>
+      </svg>
+      <div class="timer-center">
+        <div class="timer-display" id="timer-display">20:00</div>
+        <div class="timer-status" id="timer-status">準備完了</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="start-btn" onclick="startTimer()">開始</button>
+      <button class="btn" onclick="resetTimer()">リセット</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">気づきのメモ</div>
+    <textarea class="memo-textarea" id="memo-input" rows="4"
+      placeholder="今日の瞑想で観察したこと&#10;・身体の感覚&#10;・浮かんだ思考&#10;・感情の変化"></textarea>
+    <button class="btn btn-full" onclick="saveRecord()">記録を保存</button>
+  </div>
+
+  <div class="dialog-overlay" id="dialog-overlay">
+    <div class="dialog">
+      <h3>記録を全削除しますか？</h3>
+      <p>すべての瞑想記録が削除されます。この操作は元に戻せません。</p>
+      <div class="dialog-btns">
+        <button class="btn" onclick="closeDialog()">キャンセル</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">削除する</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="records-header">
+      <div class="card-label" style="margin-bottom:0">継続記録</div>
+      <button class="btn btn-danger" onclick="openDialog()">記録を削除</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value" id="streak-days">0</div>
+        <div class="stat-label">連続日数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="total-sessions">0</div>
+        <div class="stat-label">総回数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="total-minutes">0</div>
+        <div class="stat-label">総時間（分）</div>
+      </div>
+    </div>
+    <div id="records-list"></div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'vipassana_records';
+
+const quotes = [
+  { text: "心が行為に先立ち、心がすべてを導く。\n清らかな心で話し行動すれば、\n喜びが影のようについてくる。", source: "— ダンマパダ 1偈" },
+  { text: "すべての形成されたものは無常である。\n怠らず精進しなさい。", source: "— ブッダ 最後の言葉（大般涅槃経）" },
+  { text: "自己こそ自己の主人である。\n他の誰が主人となり得るだろうか。", source: "— ダンマパダ 160偈" },
+  { text: "過去を追うな。未来を待つな。\nただ現在の一瞬に、真剣に向き合いなさい。", source: "— マッジマ・ニカーヤ" },
+  { text: "見ることにおいては、ただ見ることだけがある。\n聞くことにおいては、ただ聞くことだけがある。", source: "— ウダーナ（自説経）" },
+  { text: "悪を行うな。善を行え。\n心を浄めよ。\nこれがすべての覚者の教えである。", source: "— ダンマパダ 183偈" },
+  { text: "慈しみの心を、すべての生きとし生けるものへ向けなさい。\n母が一人子を命をもって守るように。", source: "— メッタ・スッタ（慈経）" },
+  { text: "瞑想する者は智慧を育む。\n瞑想しない者は智慧を失う。", source: "— ダンマパダ 282偈" },
+  { text: "比丘よ、あなた自身を灯明とせよ。\nあなた自身を拠り所とせよ。\n法を灯明とし、法を拠り所とせよ。", source: "— マハーパリニッバーナ・スッタ" },
+  { text: "渇愛こそが苦の原因である。\n渇愛の滅尽が、苦の滅尽である。", source: "— 苦集聖諦（四聖諦）" },
+];
+
+const _t = new Date();
+const _d = Math.floor((_t - new Date(_t.getFullYear(), 0, 0)) / 86400000);
+const todayQ = quotes[_d % quotes.length];
+document.getElementById('quote-text').textContent = todayQ.text;
+document.getElementById('quote-source').textContent = todayQ.source;
+
+// 星を生成
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.left = Math.random() * 100 + '%';
+  s.style.top = Math.random() * 100 + '%';
+  s.style.setProperty('--d', (2 + Math.random() * 4) + 's');
+  s.style.animationDelay = (Math.random() * 4) + 's';
+  s.style.opacity = Math.random() * 0.5 + 0.1;
+  starsEl.appendChild(s);
+}
+
+// タイマー
+let targetSec = 20*60, remainSec = 20*60, interval = null, running = false, sessionStart = null;
+const CIRCUMFERENCE = 2 * Math.PI * 90;
+document.getElementById('timer-ring').style.strokeDasharray = CIRCUMFERENCE;
+
+function updateRing() {
+  const offset = CIRCUMFERENCE * (1 - remainSec / targetSec);
+  document.getElementById('timer-ring').style.strokeDashoffset = offset;
+}
+
+function formatTime(s) {
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+function setPreset(min, btn) {
+  if (running) return;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  targetSec = min*60; remainSec = targetSec;
+  document.getElementById('timer-display').textContent = formatTime(remainSec);
+  document.getElementById('timer-status').textContent = '準備完了';
+  updateRing();
+}
+
+function startTimer() {
+  if (running) {
+    clearInterval(interval); running = false;
+    document.getElementById('start-btn').textContent = '再開';
+    document.getElementById('timer-status').textContent = '一時停止中';
+  } else {
+    if (remainSec === 0) return;
+    if (!sessionStart) sessionStart = new Date();
+    running = true;
+    document.getElementById('start-btn').textContent = '一時停止';
+    document.getElementById('timer-status').textContent = '観察中...';
+    interval = setInterval(() => {
+      remainSec--;
+      document.getElementById('timer-display').textContent = formatTime(remainSec);
+      updateRing();
+      if (remainSec === 0) {
+        clearInterval(interval); running = false;
+        document.getElementById('start-btn').textContent = '開始';
+        document.getElementById('timer-status').textContent = '完了';
+        playBeep();
+        autoSave();
+      }
+    }, 1000);
+  }
+}
+
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.8);
+  } catch(e) {}
+}
+
+function resetTimer() {
+  clearInterval(interval); running = false; remainSec = targetSec; sessionStart = null;
+  document.getElementById('timer-display').textContent = formatTime(remainSec);
+  document.getElementById('start-btn').textContent = '開始';
+  document.getElementById('timer-status').textContent = '準備完了';
+  updateRing();
+}
+
+function autoSave() { addRecord(Math.round(targetSec/60), ''); }
+
+function saveRecord() {
+  const memo = document.getElementById('memo-input').value.trim();
+  const elapsed = sessionStart ? Math.round((targetSec - remainSec) / 60) : Math.round(targetSec/60);
+  addRecord(Math.max(1, elapsed), memo);
+  document.getElementById('memo-input').value = '';
+  sessionStart = null;
+}
+
+function addRecord(duration, memo) {
+  const records = loadRecords();
+  const now = new Date();
+  records.unshift({
+    date: now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0'),
+    duration, memo
+  });
+  saveRecords(records); renderAll();
+}
+
+function loadRecords() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; } }
+function saveRecords(r) { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); }
+
+function renderAll() {
+  const records = loadRecords();
+  document.getElementById('total-sessions').textContent = records.length;
+  document.getElementById('total-minutes').textContent = records.reduce((s,r) => s + r.duration, 0);
+  const dates = [...new Set(records.map(r => r.date))].sort().reverse();
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < dates.length; i++) {
+    if (Math.round((today - new Date(dates[i])) / 86400000) === i) streak++;
+    else break;
+  }
+  document.getElementById('streak-days').textContent = streak;
+  const el = document.getElementById('records-list');
+  if (!records.length) { el.innerHTML = '<div class="empty-msg">まだ記録がありません</div>'; return; }
+  el.innerHTML = records.slice(0,7).map(r => `
+    <div class="record-item">
+      <div class="record-meta">
+        <span class="record-date">${r.date}</span>
+        <span class="record-duration">${r.duration}分</span>
+      </div>
+      ${r.memo ? `<div class="record-memo">${r.memo}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function openDialog() { document.getElementById('dialog-overlay').classList.add('show'); }
+function closeDialog() { document.getElementById('dialog-overlay').classList.remove('show'); }
+function confirmDelete() { localStorage.removeItem(STORAGE_KEY); closeDialog(); renderAll(); }
+
+updateRing();
+renderAll();
+</script>
+</body>
+</html>
